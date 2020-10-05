@@ -1,0 +1,44 @@
+﻿@model IEnumerable<MiniMart.Models.Product>
+@helper Truncate(string input, int length)
+{
+if (input.Length <= length)
+{
+        @input
+}
+else
+{
+        @input.Substring(0, length)<text>...</text>
+}
+}
+@helper formatAmount(decimal amount)
+{
+    @String.Format("{0:c}", amount)
+}
+@{
+    ViewBag.Title = "Browse Products";
+}
+<div id="welcome-div">
+    <h1>Welcome to MiniMart!</h1>
+    <h3>Your one stop shop for quality and affordable products</h3>
+</div>
+<h2>Product List</h2>
+<p>Below are the list of products currently available</p>
+<div>
+    <ul id="product-list">
+        @foreach (var product in Model)
+        {
+            <li>
+                <a href="@Url.Action("Details",
+                    new { id = product.Id })">
+                    <img alt="@product.Name"
+                         src="@product.ArtUrl" width="208" height="208" />
+                    <span>@product.Name</span>
+                    <span>@Truncate(@product.Description, 35)</span>
+                    <span>@formatAmount(@product.Price)</span>
+                </a>
+                @Html.ActionLink("Add to cart", "AddToCart", "ShoppingCart", new { id = product.Id }, new { @class = "btn btn-info" })
+            </li>
+        }
+    </ul>
+</div>
+

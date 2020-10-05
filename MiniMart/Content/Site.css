@@ -1,0 +1,192 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background-color: #edf3f7;
+    margin-left: 160px; /* Same as the width of the sidebar */
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.sidenav {
+  height: 100%;
+  width: 160px; 
+  position: fixed;
+  background-color: white;
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0; 
+  overflow-x: hidden;
+  margin-top: 30px;
+  padding-top: 20px;
+}
+
+/* The navigation menu links */
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 20px;
+  background-color: white;
+  color:black;
+  display: block;
+}
+
+.sidenav p {
+  padding: 6px 8px 6px 16px;
+  font-size: 20px;
+  background-color: #5bc0de;
+  color: white;
+  display: block;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  background-color:  #c3c3c3;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 15px;}
+}
+
+.navbar, .navbar-header, .navbar-collapse, .navbar-nav li {
+    background-color: #333333;
+    font-size: 16px;
+}
+
+.navbar-nav li:last-of-type {
+    height: 50px;
+}
+
+.navbar-brand {
+    font-size: 30px;
+    background-color: #333333;
+}
+
+#welcome-div {
+    height: 120px;
+    background-color:  #5bc0de;
+}
+
+#welcome-div h1, #welcome-div h3 {
+    color: white;
+    background-color:  #5bc0de;
+    text-align: center;
+    margin-top: 0px;
+    padding-top: 10px;
+   
+}
+
+#product-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    background-color: white;
+}
+
+#product-list li {
+    list-style-type: none;
+    flex: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    margin: 10px;
+    justify-content: space-between;
+}
+
+#product-list li:hover {
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2), 0 4px 16px 0 rgba(0, 0, 0, 0.19);
+}
+
+#product-list a {
+    display: flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-decoration: none;
+}
+
+#product-list .btn {
+    margin-top: 25px;
+    width: 90%;
+    height: 45px;
+    font-size: 20px;
+    background-color: #5bc0de;
+    border: none;
+    transition: background 0.2s linear 0.02s;
+}
+
+#product-list .btn:hover {
+    background-color:#D53C58;
+    opacity: 1;
+}
+
+#product-list span:first-of-type {
+    margin-top: 10px;
+    font-size: x-large;
+}
+
+#product-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 800px;
+    flex-direction: row;
+    background-color: white;
+    padding: 10px;
+}
+
+#product-details {
+    margin-left: 20px;
+    width: 500px;
+    font-size: 2.3rem;
+    font-weight: 400;
+}
+
+.category {
+    font-size: 1.5rem;
+}
+
+#product-details p:nth-of-type(3) {
+    font-size: 3rem;
+}
+
+#product-details .btn {
+    width: 100%;
+    height: 45px;
+    font-size: 20px;
+    margin-top: 50px;
+    border: none;
+    transition: background 0.2s linear 0.02s;
+}
+
+#product-details .btn:hover {
+    background-color:#D53C58;
+}
+
+.details-header {
+    background-color:  #5bc0de;
+    color: white;
+    text-align: center;
+    width: 800px;
+    padding: 1px;
+    margin-top: 0px;
+}

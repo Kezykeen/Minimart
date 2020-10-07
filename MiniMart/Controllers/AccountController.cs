@@ -393,6 +393,11 @@ namespace MiniMart.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+
+            //Get cart and empty it after logging off
+            var cart = ShoppingCart.GetCart(this.HttpContext);
+            cart.EmptyCart();
+
             return RedirectToAction("Index", "Home");
         }
 

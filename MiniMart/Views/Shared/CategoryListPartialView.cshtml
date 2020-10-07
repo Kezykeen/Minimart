@@ -1,0 +1,12 @@
+﻿@model IEnumerable<MiniMart.Models.Category>
+
+
+@foreach (var item in Model)
+{
+    <ul id="category-list">
+        <li>
+            <a href="@Url.Action("Browse", new { category = item.Name})">@item.Name</a>
+        </li>
+    </ul>
+
+}

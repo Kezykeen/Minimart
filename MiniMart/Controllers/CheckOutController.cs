@@ -19,7 +19,7 @@ namespace MiniMart.Controllers
 
             if (result == 0)
             {
-                ModelState.AddModelError("", "Sorry, your cart is empty!");
+                return View("Error");
             }
 
             return View();
@@ -35,9 +35,6 @@ namespace MiniMart.Controllers
             order.Username = User.Identity.Name;
             order.OrderDate = DateTime.Now;
 
-            //Save Order
-            db.Order.Add(order);
-            db.SaveChanges();
             //Process the order
             var cart = ShoppingCart.GetCart(this.HttpContext);
             cart.CreateOrder(order);

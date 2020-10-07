@@ -15,6 +15,20 @@ namespace MiniMart.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        //temp code browse
+        public ActionResult Browse(string category)
+        {
+            var categoryModel = db.Category.Include("Products")
+                .Single(c => c.Name == category);
+            return View(categoryModel);
+        }
+
+        public ActionResult CategoryList()
+        {
+            var categories = db.Category.ToList();
+            return PartialView("CategoryListPartialView", categories);
+        }
+
         // GET: Products
         public ActionResult Index()
         {

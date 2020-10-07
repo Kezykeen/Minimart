@@ -280,6 +280,8 @@
     <Content Include="Views\ShoppingCart\Index.cshtml" />
     <Content Include="Views\Shared\CartSummary.cshtml" />
     <Content Include="Views\Products\AdminIndex.cshtml" />
+    <Content Include="Views\Products\Browse.cshtml" />
+    <Content Include="Views\Shared\CategoryListPartialView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

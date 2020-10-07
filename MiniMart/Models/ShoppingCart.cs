@@ -117,6 +117,8 @@ namespace MiniMart.Models
 
             order.Total = orderTotal;
 
+            //Save Order
+            db.Order.Add(order);
             db.SaveChanges();
 
             EmptyCart();

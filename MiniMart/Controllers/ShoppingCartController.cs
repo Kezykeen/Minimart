@@ -1,4 +1,6 @@
 ﻿using MiniMart.Models;
+using MiniMart.Persistence;
+using MiniMart.Repositories;
 using MiniMart.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,60 +12,51 @@ namespace MiniMart.Controllers
 {
     public class ShoppingCartController : Controller
     {
-        ApplicationDbContext db = new ApplicationDbContext();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public ShoppingCartController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
         // GET: ShoppingCart
         public ActionResult Index()
         {
-            var cart = ShoppingCart.GetCart(this.HttpContext);
-
-            var viewModel = new ShoppingCartViewModel
+            return View(new ShoppingCartViewModel
             {
-                CartItems = cart.GetCartItems(),
-                CartTotal = cart.GetTotal()
-            };
-
-            return View(viewModel);
+                CartItems = _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext).GetCartItems(),
+                CartTotal = _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext).GetTotal()
+            });
         }
 
         public ActionResult AddToCart(int Id)
         {
-            var addedProduct = db.Product.Single(item => item.Id == Id);
+            var addedProduct = _unitOfWork.ProductRepo.FindProduct(Id);
 
-            var cart = ShoppingCart.GetCart(this.HttpContext);
+            _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext).AddToCart(addedProduct);
 
-            cart.AddToCart(addedProduct);
-
-            return RedirectToAction("Index");
+            return View();
         }
 
         [HttpPost]
         public ActionResult RemoveFromCart(int Id)
         {
-            var cart = ShoppingCart.GetCart(this.HttpContext);
+            string productName = _unitOfWork.ShoppingCartRepo.GetCartById(Id).Product.Name;
 
-            string productName = db.Cart.Single(item => item.RecordId == Id).Product.Name;
-
-            int itemCount = cart.RemoveFromCart(Id);
-
-            var results = new ShoppingCartRemoveViewModel
+            return Json(new ShoppingCartRemoveViewModel
             {
                 Message = Server.HtmlEncode(productName) +
                     " has been removed from your shopping cart.",
-                CartTotal = cart.GetTotal(),
-                CartCount = cart.GetCount(),
-                ItemCount = itemCount,
+                CartTotal = _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext).GetTotal(),
+                CartCount = _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext).GetCount(),
+                ItemCount = _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext).RemoveFromCart(Id),
                 DeleteId = Id
-            };
-
-            return Json(results);
+            });
         }
 
         [ChildActionOnly]
         public ActionResult CartSummary()
         {
-            var cart = ShoppingCart.GetCart(this.HttpContext);
-
-            double result = cart.GetCartItemCount();
+            double result = _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext).GetCartItemCount();
 
             return PartialView("CartSummary", result);
         }

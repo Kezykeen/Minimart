@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MiniMart.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
+using MiniMart.Repositories;
 
 namespace MiniMart.Controllers
 {
@@ -18,15 +19,13 @@ namespace MiniMart.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
-        public AccountController()
-        {
-        }
+        private ShoppingCartRepository _shoppingCartRepository;
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            _shoppingCartRepository = new ShoppingCartRepository();
         }
 
         public ApplicationSignInManager SignInManager
@@ -395,8 +394,7 @@ namespace MiniMart.Controllers
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
 
             //Get cart and empty it after logging off
-            var cart = ShoppingCart.GetCart(this.HttpContext);
-            cart.EmptyCart();
+            _shoppingCartRepository.GetCart(this.HttpContext).EmptyCart();
 
             return RedirectToAction("Index", "Home");
         }

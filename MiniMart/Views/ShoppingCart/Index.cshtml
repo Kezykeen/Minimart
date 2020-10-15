@@ -8,17 +8,13 @@
     @String.Format("{0:c}", amount)
 }
 
-<h3>
-    <em>Review</em> your cart:
+<h3 style="background-color: white; padding: 10px; width: 220px">
+    <b>Review your cart</b>
 </h3>
-
-<p>
-    @Html.ActionLink("Checkout>>", "AddressAndPayment", "CheckOut", "", new { @class = "btn btn-info" })
-</p>
 
 <div id="update-message">
 </div>
-<table class="table table-bordered table-striped" style="width:700px">
+<table class="table" style="width:700px">
     <thead>
         <tr>
             <th>
@@ -33,12 +29,15 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody style="background-color: white; padding: 10px">
         @foreach (var item in Model.CartItems)
         {
             <tr id="row-@item.RecordId">
                 <td>
-                    @Html.ActionLink(item.Product.Name, "Details", "Products", new { id = item.ProductId }, null)
+                    <a href="@Url.Action("Details", new { id = item.ProductId })">
+                        <img alt="@item.Product.Name" src="@item.Product.ArtUrl" width="70" height="70" />
+                        <span>@item.Product.Name</span>
+                    </a>
                 </td>
                 <td>
                     @formatAmount(@item.Product.Price)
@@ -53,7 +52,7 @@
                 </td>
             </tr>
         }
-        <tr class="info">
+        <tr style="background-color: #5bc0de; color: white; font-size: 20px">
             <td>
                 <b>Total</b>
             </td>
@@ -66,7 +65,10 @@
     </tbody>
 </table>
 
-@Html.ActionLink("Continue Shopping", "Index", "Products")
+<p>
+    @Html.ActionLink("Continue Shopping", "Index", "Products", "", new { @class = "btn continue-shopping-btn"})
+    @Html.ActionLink("Checkout>>", "AddressAndPayment", "CheckOut", "", new { @class = "btn btn-info" })
+</p>
 
 
 @section scripts{

@@ -31,9 +31,24 @@ else
                     <span>@Truncate(@product.Description, 35)</span>
                     <span>@formatAmount(@product.Price)</span>
                 </a>
-                @Html.ActionLink("Add to cart", "AddToCart", "ShoppingCart", new { id = product.Id }, new { @class = "btn btn-info" })
+                <a href="@Url.Action("AddToCart", "ShoppingCart", new { id = product.Id })" class="btn btn-info" data-target="#loginModal" data-toggle="modal">Add To Cart</a>
             </li>
         }
     </ul>
+</div>
+
+@*Bootstrap modal pop-up*@
+<div class="modal fade" id="loginModal" data-keyboard="false" data-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p><b>Product has been successfully added to your cart</b></p>
+            </div>
+            <div class="modal-footer">
+                @Html.ActionLink("Continue Shopping", "Index", "Products", "", new { @class = "btn continue-shopping-btn" })
+                @Html.ActionLink("View Cart & Checkout", "Index", "ShoppingCart", "", new { @class = "btn btn-info" })
+            </div>
+        </div>
+    </div>
 </div>
 

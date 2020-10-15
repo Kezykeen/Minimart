@@ -1,4 +1,6 @@
 ﻿using MiniMart.Models;
+using MiniMart.Persistence;
+using MiniMart.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +12,35 @@ namespace MiniMart.Controllers
     [Authorize]
     public class CheckOutController : Controller
     {
-        ApplicationDbContext db = new ApplicationDbContext();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public CheckOutController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        // GET: /Checkout/Complete
+        public ActionResult Complete(int id)
+        {
+            bool isValid = _unitOfWork.CheckOutRepo.CheckOrderValidity(id);
+
+            // Verify if the Customer owns the order
+            if (isValid && _unitOfWork.CheckOutRepo.GetOrder(id).Username == User.Identity.Name)
+            {
+                return View(id);
+            }
+            else
+            {
+                return View("Error");
+            }
+        }
+
         // GET: CheckOut
         public ActionResult AddressAndPayment()
         {
-            var cart = ShoppingCart.GetCart(this.HttpContext);
-            double result = cart.GetCartItemCount();
+            var cart = _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext);
 
-            if (result == 0)
+            if (cart.GetCartItemCount() == 0)
             {
                 return View("Error");
             }
@@ -36,28 +59,10 @@ namespace MiniMart.Controllers
             order.OrderDate = DateTime.Now;
 
             //Process the order
-            var cart = ShoppingCart.GetCart(this.HttpContext);
+            var cart = _unitOfWork.ShoppingCartRepo.GetCart(this.HttpContext);
             cart.CreateOrder(order);
 
             return RedirectToAction("Complete", new { id = order.OrderId });
-        }
-
-        // GET: /Checkout/Complete
-        public ActionResult Complete(int id)
-        {
-            // Validate customer owns this order
-            bool isValid = db.Order.Any(
-                o => o.OrderId == id &&
-                o.Username == User.Identity.Name);
-
-            if (isValid)
-            {
-                return View(id);
-            }
-            else
-            {
-                return View("Error");
-            }
         }
     }
 }

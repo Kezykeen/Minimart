@@ -8,37 +8,45 @@ using System.Web;
 using System.Web.Mvc;
 using MiniMart.Models;
 using MiniMart.ViewModels;
+using MiniMart.Repositories;
+using MiniMart.Persistence;
 
 namespace MiniMart.Controllers
 {
     public class ProductsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private readonly IUnitOfWork _unitOfWork;
 
-        //temp code browse
+        public ProductsController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        // Browse category
         public ActionResult Browse(string category)
         {
-            var categoryModel = db.Category.Include("Products")
+            var categoryModel = _unitOfWork.CategoryRepo.GetCategory().Include("Products")
                 .Single(c => c.Name == category);
             return View(categoryModel);
         }
 
         public ActionResult CategoryList()
         {
-            var categories = db.Category.ToList();
+            var categories = _unitOfWork.CategoryRepo.GetCategory().ToList();
             return PartialView("CategoryListPartialView", categories);
         }
 
         // GET: Products
         public ActionResult Index()
         {
-            var product = db.Product.Include(p => p.Category);
+            var product = _unitOfWork.ProductRepo.GetProductWithCategory();
 
             if (User.IsInRole("CanManageProducts"))
                 return View("AdminIndex", product.ToList());
 
             return View(product.ToList());
         }
+
 
         // GET: Products/Details/5
         public ActionResult Details(int? id)
@@ -48,8 +56,8 @@ namespace MiniMart.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Product product = db.Product.Find(id);
-            Category category = db.Category.Single(c => c.Id == product.CategoryId);
+            Product product = _unitOfWork.ProductRepo.FindProduct(id);
+            Category category = _unitOfWork.CategoryRepo.GetCategory().Single(c => c.Id == product.CategoryId);
 
             ProductCategoryViewModel viewModel = new ProductCategoryViewModel
             {
@@ -69,7 +77,7 @@ namespace MiniMart.Controllers
         [Authorize(Roles = RoleName.CanManageProducts)]
         public ActionResult Create()
         {
-            ViewBag.CategoryId = new SelectList(db.Category, "Id", "Name");
+            ViewBag.CategoryId = new SelectList(_unitOfWork.CategoryRepo.GetCategory(), "Id", "Name");
 
             return View();
         }
@@ -84,15 +92,18 @@ namespace MiniMart.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Product.Add(product);
-                db.SaveChanges();
+                _unitOfWork.ProductRepo.Add(product);
+                _unitOfWork.Complete();
+ 
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CategoryId = new SelectList(db.Category, "Id", "Name", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(_unitOfWork.CategoryRepo.GetCategory(), "Id", "Name", product.CategoryId);
 
             return View(product);
         }
+
+        
 
         // GET: Products/Edit/5
         [Authorize(Roles = RoleName.CanManageProducts)]
@@ -103,13 +114,13 @@ namespace MiniMart.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Product product = db.Product.Find(id);
+            Product product = _unitOfWork.ProductRepo.FindProduct(id);
 
             if (product == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.CategoryId = new SelectList(db.Category, "Id", "Name", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(_unitOfWork.CategoryRepo.GetCategory(), "Id", "Name", product.CategoryId);
             return View(product);
         }
 
@@ -123,11 +134,11 @@ namespace MiniMart.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(product).State = EntityState.Modified;
-                db.SaveChanges();
+                _unitOfWork.Entry(product).State = EntityState.Modified;
+                _unitOfWork.Complete();
                 return RedirectToAction("Index");
             }
-            ViewBag.CategoryId = new SelectList(db.Category, "Id", "Name", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(_unitOfWork.CategoryRepo.GetCategory(), "Id", "Name", product.CategoryId);
             return View(product);
         }
 
@@ -139,7 +150,7 @@ namespace MiniMart.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Product.Find(id);
+            Product product = _unitOfWork.ProductRepo.FindProduct(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -153,17 +164,19 @@ namespace MiniMart.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Product product = db.Product.Find(id);
-            db.Product.Remove(product);
-            db.SaveChanges();
+            Product product = _unitOfWork.ProductRepo.FindProduct(id);
+            _unitOfWork.ProductRepo.Remove(product);
+            _unitOfWork.Complete();
             return RedirectToAction("Index");
         }
+
+        
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                _unitOfWork.Dispose();
             }
             base.Dispose(disposing);
         }

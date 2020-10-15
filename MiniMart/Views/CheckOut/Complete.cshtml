@@ -3,8 +3,15 @@
     ViewBag.Title = "Checkout Complete";
 }
 
-<h2>Checkout Completed</h2>
-<p>Order processed successfully! Your order number is: @Model</p>
+<div class="checkout-container">
+    <h2>Checkout Completed</h2>
+    <h3>Package Details</h3>
+    <div>
+        <h4>Order Number: <b><text>632R</text>@Model<text>B</text></b></h4>
+        <h4>Shipping Date: @DateTime.Now.AddDays(4).ToLongDateString()</h4>
+    </div>
+</div>
+
 <hr />
-@Html.ActionLink("Continue Shopping", "Index", "Products")
+@Html.ActionLink("Continue Shopping", "Index", "Products", "", new { @class = "btn btn-info" })
 
